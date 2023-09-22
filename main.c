@@ -37,11 +37,17 @@ int main(int argc, char **argv)
 	init_pair(ID_LINE_COMMENT, COLOR_GREEN, COLOR_BLACK);    /* line comments */
 	init_pair(ID_SINGLE_STRING, COLOR_YELLOW, COLOR_BLACK);  /* single quoted strings */
 	init_pair(ID_DOUBLE_STRING, COLOR_YELLOW, COLOR_BLACK);  /* double quoted strings */
-
-	curbp = find_buffer("*scratch*", TRUE);
-	strncpy(curbp->b_bname, "*scratch*", STRBUF_S);
-
-	arguments(argc, argv);
+	
+	if (1 < argc) {
+		curbp = find_buffer(argv[1], TRUE);
+		(void) insert_file(argv[1], FALSE);
+		/* Save filename regardless of load() success. */
+		strncpy(curbp->b_fname, argv[1], NAME_MAX);
+		curbp->b_fname[NAME_MAX] = '\0'; /* force truncation */
+	} else {
+		curbp = find_buffer("*scratch*", TRUE);
+		strncpy(curbp->b_bname, "*scratch*", STRBUF_S);
+	}
 
 	wheadp = curwp = new_window();
 	one_window(curwp);
